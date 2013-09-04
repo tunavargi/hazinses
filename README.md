@@ -53,3 +53,8 @@ any bounce or complaint notifications, it will prevent you to send email again t
     
     send_email.delay(subject, body,from_email,
                      to_email, mail_save_subject)
+                     
+                     
+###### THANKS
+
+thanks to serdarakarca
