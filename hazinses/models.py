@@ -21,7 +21,7 @@ class SentMail(models.Model):
     message_key = models.CharField(max_length=255, blank=True, null=True)
 
     def __unicode__(self):
-        return self.receiver
+        return (self.receiver.username + "-" + self.subject)
 
 
 class UserEmailProfile(models.Model):
