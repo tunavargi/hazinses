@@ -16,7 +16,7 @@ setup(
     long_description=README,
     author='Tuna VARGI',
     author_email='tunavargi@gmail.com',
-    install_requires=['django', 'boto', 'djcelery'],
+    install_requires=['django', 'boto', 'django-celery'],
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
