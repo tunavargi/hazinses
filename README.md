@@ -29,7 +29,7 @@ make sure that you installed hazinses requirements
 
     url(r'^hazinses/', include('hazinses.urls')),
     
-4) SET FOLLOWINGS to your settings.py
+4) Set following settings to your settings.py
 
     AMAZON_REGION = '<YOUR AMAZON REGION>'
     AWS_ACCESS_KEY_ID = '<AWS_ACCESS_KEY_ID>'
