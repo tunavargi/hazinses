@@ -15,6 +15,10 @@ and prevent forever you to send email to that user again.
 
     pip install hazinses
     
+make sure that you installed hazinses requirements
+    
+    ['boto', 'djcelery']
+    
 2) Add hazinses into your INSTALLED_APPS 
 
 
