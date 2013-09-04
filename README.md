@@ -1,12 +1,13 @@
 ## hazinSES
 
+![hazinses](http://ucuncuadam.files.wordpress.com/2012/02/sami-hazinses-2.jpg?w=500&h=389 "hazinses")
+
 #####ABOUT
 
 Hazinses is a django app, that helps you to send asynchronous email via celery through Amazon-SES. The biggest problem
-is complaint and bounce emails that come as feedback from amazon services. Those emails cause you to reported as Hard Bounce and
-prevent you to send email again.
+is complaint and bounce emails that come as feedback from amazon services. Those emails cause you to be reported as Hard Bounce in case you keep sending emails
+and prevent forever you to send email to that user again.
 
-![hazinses](http://ucuncuadam.files.wordpress.com/2012/02/sami-hazinses-2.jpg?w=500&h=389 "hazinses")
 
 #####INSTRUCTIONS
 
@@ -32,7 +33,7 @@ prevent you to send email again.
     BOUNCE_TIMEDELTA = <DAYS FOR NOT SENDING EMAIL AFTER BOUNCE NOTIFICTAION>
     COMPLAINT_TIMEDELTA = <DAYS FOR NOT SENDING EMAIL AFTER COMPLAINT NOTIFICATION>
 
-4) syncdb
+4) Sync your Database
     
     python manage.py syncdb
     
