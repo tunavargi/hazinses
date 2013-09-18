@@ -14,24 +14,26 @@ conn = boto.ses.connect_to_region(
 
 
 @celery.task
-def send_email(subject, message, from_email, to_email, mail_subject):
+def send_email(subject, message, from_email, to_email, mail_subject, html_body):
     user = User.objects.get(username=to_email)
     useremail, created = UserEmailProfile.objects.get_or_create(user=user)
     if useremail.notsendmail:
         if useremail.notsendmail < datetime.now():
             useremail.notsendmail = None
             useremail.save()
-            response = conn.send_email(from_email, message, subject, [to_email])
-            response_id = response['SendEmailResponse']['SendEmailResult']\
-                ['MessageId']
+            response = conn.send_email(from_email, subject,
+                                       message, [to_email],
+                                       html_body=html_body)
             SentMail.objects.create(receiver=user, subject=mail_subject,
                                     message_key=response_id)
             return HttpResponse("ok")
         else:
             return None
     else:
-        response = conn.send_email(from_email, message, subject, [to_email])
-        response_id = response['SendEmailResponse']['SendEmailResult']\
+        response = conn.send_email(from_email, subject,
+                                   message, [to_email],
+                                   html_body=html_body)
+        response_id = response['SendEmailResponse']['SendEmailResult'] \
             ['MessageId']
         SentMail.objects.create(receiver=user, subject=mail_subject,
                                 message_key=response_id)
