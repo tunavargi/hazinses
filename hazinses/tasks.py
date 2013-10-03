@@ -24,6 +24,9 @@ def send_email(subject, message, from_email, to_email, mail_subject, html_body):
             response = conn.send_email(from_email, subject,
                                        message, [to_email],
                                        html_body=html_body)
+            response_id = response['SendEmailResponse']['SendEmailResult'] \
+                        ['MessageId']
+
             SentMail.objects.create(receiver=user, subject=mail_subject,
                                     message_key=response_id)
             return HttpResponse("ok")
@@ -38,3 +41,12 @@ def send_email(subject, message, from_email, to_email, mail_subject, html_body):
         SentMail.objects.create(receiver=user, subject=mail_subject,
                                 message_key=response_id)
         return HttpResponse("ok")
+
+
+@celery.task
+def send_dummy_mail(subject, message, from_email, to_email, mail_subject, html_body):
+        response = conn.send_email(from_email, subject,
+                                   message, [to_email],
+                                   html_body=html_body)
+        response_id = response['SendEmailResponse']['SendEmailResult'] \
+            ['MessageId']

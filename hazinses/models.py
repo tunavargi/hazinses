@@ -28,3 +28,11 @@ class UserEmailProfile(models.Model):
     user = models.ForeignKey(User)
     notsendmail = models.DateTimeField(blank=True, null=True)
 
+    def __unicode__(self):
+        return self.user.username
+
+class BlackList(models.Model):
+    email = models.EmailField()
+
+    def __unicode__(self):
+        return self.email
