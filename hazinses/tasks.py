@@ -6,47 +6,45 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 from hazinses.models import UserEmailProfile, SentMail
 
-
 conn = boto.ses.connect_to_region(
     settings.AMAZON_REGION,
     aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
     aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
 
-
 @celery.task
-def send_email(subject, message, from_email, to_email, mail_subject, html_body):
-    user = User.objects.get(username=to_email)
-    useremail, created = UserEmailProfile.objects.get_or_create(user=user)
-    if useremail.notsendmail:
-        if useremail.notsendmail < datetime.now():
-            useremail.notsendmail = None
-            useremail.save()
-            response = conn.send_email(from_email, subject,
-                                       message, [to_email],
-                                       html_body=html_body)
-            response_id = response['SendEmailResponse']['SendEmailResult'] \
-                        ['MessageId']
+def send_email(subject, message, from_email, to_email):
+    try:
+        user = User.objects.get(username=to_email[0])
+        useremail, created = UserEmailProfile.objects.get_or_create(
+            user__id=user.id)
 
-            SentMail.objects.create(receiver=user, subject=mail_subject,
+        if useremail.notsendmail:
+            if useremail.notsendmail < datetime.now():
+                useremail.notsendmail = None
+                useremail.save()
+                response = conn.send_email(from_email, subject,
+                                           message, to_email,
+                                           html_body=message)
+                response_id = response['SendEmailResponse']['SendEmailResult'] \
+                            ['MessageId']
+
+                SentMail.objects.create(receiver=user, subject=subject,
+                                        message_key=response_id)
+                return HttpResponse("ok")
+            else:
+                return None
+        else:
+            response = conn.send_email(from_email, subject,
+                                       message, to_email,
+                                       html_body=message)
+            response_id = response['SendEmailResponse']['SendEmailResult'] \
+                ['MessageId']
+            SentMail.objects.create(receiver=user, subject=subject,
                                     message_key=response_id)
             return HttpResponse("ok")
-        else:
-            return None
-    else:
+    except User.DoesNotExist:
         response = conn.send_email(from_email, subject,
-                                   message, [to_email],
-                                   html_body=html_body)
-        response_id = response['SendEmailResponse']['SendEmailResult'] \
-            ['MessageId']
-        SentMail.objects.create(receiver=user, subject=mail_subject,
-                                message_key=response_id)
-        return HttpResponse("ok")
-
-
-@celery.task
-def send_dummy_mail(subject, message, from_email, to_email, mail_subject, html_body):
-        response = conn.send_email(from_email, subject,
-                                   message, [to_email],
-                                   html_body=html_body)
+                                   message, to_email,
+                                   html_body=message)
         response_id = response['SendEmailResponse']['SendEmailResult'] \
             ['MessageId']
