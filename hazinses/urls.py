@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, include, url
-from hazinses.views import SNSMessageView
+from views import SNSMessageView
 
 sns_message = SNSMessageView
 

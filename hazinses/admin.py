@@ -1,5 +1,5 @@
 from django.contrib import admin
-from hazinses.models import *
+from models import *
 
 admin.site.register(SNSMessage)
 admin.site.register(SentMail)
