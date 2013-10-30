@@ -4,7 +4,7 @@ import datetime
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.http import HttpResponse
-from hazinses.models import UserEmailProfile, SentMail
+from models import UserEmailProfile, SentMail
 
 conn = boto.ses.connect_to_region(
     settings.AMAZON_REGION,
