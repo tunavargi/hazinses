@@ -46,13 +46,10 @@ make sure that you installed hazinses requirements
 
     python manage.py celeryd
     
-6) Use send_email as following in your code. This will make you send async email through your AWS SES account. In case, you receiver
-any bounce or complaint notifications, it will prevent you to send email again to that user again.
+6) Use default send_mail function of django, after you change the email backend settings from your settings.py like below
 
-    from hazinses.tasks import send_email
-    
-    send_email.delay(subject, body,from_email,
-                     to_email, mail_save_subject)
+    EMAIL_BACKEND = "hazinses.EmailBackend"
+
                      
                      
 ###### THANKS
