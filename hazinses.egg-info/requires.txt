@@ -1,0 +1,3 @@
+django
+boto
+django-celery
