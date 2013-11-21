@@ -1,6 +1,7 @@
 import boto.ses
 import celery
 import datetime
+from django.db import IntegrityError
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.http import HttpResponse
@@ -42,7 +43,7 @@ def send_email(subject, message, from_email, to_email):
             SentMail.objects.create(receiver=user, subject=subject,
                                     message_key=response_id)
             return HttpResponse("ok")
-    except User.DoesNotExist:
+    except (User.DoesNotExist, IntegrityError):
         response = conn.send_email(from_email, subject,
                                    message, to_email,
                                    html_body=message)
