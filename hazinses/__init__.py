@@ -12,10 +12,10 @@ class EmailBackend(BaseEmailBackend):
             recipients = [sanitize_address(addr, email_message.encoding)
                           for addr in email_message.recipients()]
             try:
-                send_email.delay(email_message.subject.title(),
-                                 email_message.message().as_string(),
-                                 from_email,
-                                 recipients)
+                send_email(email_message.subject.title(),
+                           email_message.message().as_string(),
+                           from_email,
+                           recipients)
             except:
                 if not self.fail_silently:
                     raise
