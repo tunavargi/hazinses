@@ -1,6 +1,7 @@
 import boto.ses
 import celery
 import datetime
+from django.db import IntegrityError
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.http import HttpResponse
@@ -27,22 +28,26 @@ def get_response_id(response):
 
 @celery.task
 def send_email(subject, message, from_email, to_email):
-    user = User.objects.get(email=to_email[0])
-    useremail, created = UserEmailProfile.objects.get_or_create(user=user)
+    try:
+        user = User.objects.get(email=to_email[0])
+        useremail, created = UserEmailProfile.objects.get_or_create(user=user)
 
-    if useremail.notsendmail:
-        if useremail.notsendmail < datetime.now():
-            useremail.notsendmail = None
-            useremail.save()
+        if useremail.notsendmail:
+            if useremail.notsendmail < datetime.now():
+                useremail.notsendmail = None
+                useremail.save()
+                response = conn.send_raw_email(message, from_email, to_email)
+
+                SentMail.objects.create(receiver=user, subject=subject,
+                                        message_key=get_response_id(response))
+                return HttpResponse("ok")
+            else:
+                return None
+        else:
             response = conn.send_raw_email(message, from_email, to_email)
-
             SentMail.objects.create(receiver=user, subject=subject,
                                     message_key=get_response_id(response))
             return HttpResponse("ok")
-        else:
-            return None
-    else:
+    except (User.DoesNotExist, IntegrityError):
         response = conn.send_raw_email(message, from_email, to_email)
-        SentMail.objects.create(receiver=user, subject=subject,
-                                message_key=get_response_id(response))
         return HttpResponse("ok")
