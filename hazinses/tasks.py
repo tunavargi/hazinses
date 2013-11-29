@@ -1,7 +1,6 @@
 import boto.ses
 import celery
 import datetime
-from django.db import IntegrityError
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.http import HttpResponse
@@ -13,34 +12,37 @@ conn = boto.ses.connect_to_region(
     aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
 
 
+def get_response_id(response):
+    response_id = None
+    if 'SendEmailResponse' in response:
+        response_id = (response['SendEmailResponse']
+                       ['SendEmailResult']
+                       ['MessageId'])
+    elif 'SendRawEmailResponse' in response:
+        response_id = (response['SendRawEmailResponse']
+                       ['SendRawEmailResult']
+                       ['MessageId'])
+    return response_id
+
+
 @celery.task
 def send_email(subject, message, from_email, to_email):
-    try:
-        user = User.objects.get(username=to_email[0])
-        useremail, created = UserEmailProfile.objects.get_or_create(
-            user__id=user.id)
+    user = User.objects.get(email=to_email[0])
+    useremail, created = UserEmailProfile.objects.get_or_create(user=user)
 
-        if useremail.notsendmail:
-            if useremail.notsendmail < datetime.now():
-                useremail.notsendmail = None
-                useremail.save()
-                response = conn.send_raw_email(message, from_email, to_email)
-                response_id = response['SendEmailResponse']['SendEmailResult'] \
-                            ['MessageId']
-
-                SentMail.objects.create(receiver=user, subject=subject,
-                                        message_key=response_id)
-                return HttpResponse("ok")
-            else:
-                return None
-        else:
+    if useremail.notsendmail:
+        if useremail.notsendmail < datetime.now():
+            useremail.notsendmail = None
+            useremail.save()
             response = conn.send_raw_email(message, from_email, to_email)
-            response_id = response['SendEmailResponse']['SendEmailResult'] \
-                ['MessageId']
+
             SentMail.objects.create(receiver=user, subject=subject,
-                                    message_key=response_id)
+                                    message_key=get_response_id(response))
             return HttpResponse("ok")
-    except (User.DoesNotExist, IntegrityError):
+        else:
+            return None
+    else:
         response = conn.send_raw_email(message, from_email, to_email)
-        response_id = response['SendEmailResponse']['SendEmailResult'] \
-            ['MessageId']
+        SentMail.objects.create(receiver=user, subject=subject,
+                                message_key=get_response_id(response))
+        return HttpResponse("ok")
