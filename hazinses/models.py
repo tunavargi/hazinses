@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 
 
 class SNSMessage(models.Model):
@@ -11,7 +11,7 @@ class SNSMessage(models.Model):
 
 
 class SentMail(models.Model):
-    receiver = models.ForeignKey(User)
+    receiver = models.ForeignKey(settings.AUTH_USER_MODEL)
     subject = models.CharField(max_length=255, blank=True, null=True)
     time = models.DateTimeField(auto_now_add=True)
     message_key = models.CharField(max_length=255, blank=True, null=True)
@@ -21,11 +21,12 @@ class SentMail(models.Model):
 
 
 class UserEmailProfile(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     notsendmail = models.DateTimeField(blank=True, null=True)
 
     def __unicode__(self):
         return self.user.username
+
 
 class BlackList(models.Model):
     email = models.EmailField()

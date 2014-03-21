@@ -1,11 +1,12 @@
 import boto.ses
 import celery
 import datetime
+from django.contrib.auth import get_user_model
 from django.db import IntegrityError
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.http import HttpResponse
 from models import UserEmailProfile, SentMail
+
 
 conn = boto.ses.connect_to_region(
     settings.AMAZON_REGION,
@@ -29,6 +30,7 @@ def get_response_id(response):
 @celery.task
 def send_email(subject, message, from_email, to_email):
     try:
+        User = get_user_model()
         user = User.objects.get(email=to_email[0])
         useremail, created = UserEmailProfile.objects.get_or_create(user=user)
 
