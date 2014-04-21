@@ -3,16 +3,14 @@ from setuptools import setup
 
 
 # allow setup.py to be run from any path
-os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='hazinses',
-    version='0.5',
+    version='0.5.1',
     packages=['hazinses'],
     include_package_data=True,
     license='BSD License',
     description='A simple Django app for connecting AMAZON SES-CELERY AND BOTO.',
-    long_description=README,
     author='Tuna VARGI',
     author_email='tunavargi@gmail.com',
     install_requires=['django', 'boto', 'django-celery'],
