@@ -25,7 +25,7 @@ class UserEmailProfile(models.Model):
     notsendmail = models.DateTimeField(blank=True, null=True)
 
     def __unicode__(self):
-        return self.user.username
+        return self.user.email
 
 
 class BlackList(models.Model):
