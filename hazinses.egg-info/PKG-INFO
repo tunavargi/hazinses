@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: hazinses
-Version: 0.4
+Version: 0.5
 Summary: A simple Django app for connecting AMAZON SES-CELERY AND BOTO.
 Home-page: UNKNOWN
 Author: Tuna VARGI
