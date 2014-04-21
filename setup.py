@@ -6,7 +6,7 @@ from setuptools import setup
 
 setup(
     name='hazinses',
-    version='0.5.1',
+    version='0.5.2',
     packages=['hazinses'],
     include_package_data=True,
     license='BSD License',
